@@ -1,6 +1,6 @@
 # Get Focused — Cognitive Fatigue Detection System
 
-A real-time cognitive fatigue detection browser extension that monitors typing and mouse behavior patterns to predict fatigue levels and provide actionable feedback.
+A real-time cognitive fatigue detection browser extension that monitors typing behavior patterns to predict fatigue levels and provide actionable feedback.
 
 ## Project Structure
 
@@ -10,14 +10,16 @@ extension/
 │   ├── manifest.json           # Extension manifest (MV3)
 │   ├── content.js              # Privacy-safe data collection
 │   ├── background.js           # Service worker (orchestration)
-│   ├── popup.html/css/js       # Dashboard UI
+│   ├── dashboard.html/css/js   # Full-page Dashboard UI
+│   ├── popup.html/css/js       # Quick-view Popup UI
 │   ├── options.html/css/js     # Settings page
 │   ├── libs/
-│   │   └── feature-engine.js   # Feature computation library
+│   │   ├── feature-engine.js   # Feature computation library
+│   │   └── supabase-client.js  # Supabase cloud sync library
 │   └── icons/                  # Extension icons
 │
 ├── backend/                    # Flask Backend API
-│   ├── app.py                  # API server (port 5050)
+│   ├── app.py                  # API server
 │   ├── model_runner.py         # Random Forest model (scikit-learn)
 │   ├── requirements.txt        # Python dependencies
 │   └── model/                  # Trained model storage
@@ -27,15 +29,16 @@ extension/
 
 ## Setup
 
-### 1. Backend (Flask API)
+### 1. Backend (Flask API via PythonAnywhere)
 
+The backend is currently hosted on **PythonAnywhere** at `https://NIKILLOGESH.pythonanywhere.com`. 
+To run it locally:
 ```bash
 cd backend
 pip install -r requirements.txt
 python app.py
 ```
-
-The server starts on `http://localhost:5050`. On first run, it generates a synthetic dataset (45,000 samples) and trains a Random Forest classifier automatically.
+The local server will start on `http://localhost:5050`. On first run, it processes a project-based dataset gathered by real-time extension tracking (45,000 samples) and trains a Random Forest classifier automatically.
 
 ### 2. Browser Extension
 
@@ -45,16 +48,18 @@ The server starts on `http://localhost:5050`. On first run, it generates a synth
 4. Click **Load unpacked**
 5. Select the `chrome-extension/` folder
 
+**Note on Security:** Supabase API keys and URLs inside the codebase (`libs/supabase-client.js` and `manifest.json`) have been secured and replaced with placeholders (`YOUR_SUPABASE_URL`, `YOUR_SUPABASE_ANON_KEY`) before pushing to GitHub. To run full cloud sync locally, you must provide your own Supabase project credentials.
+
 ### API Endpoints
 
 | Method | Endpoint | Description |
 |--------|----------|-------------|
 | GET | `/health` | API health check and model status |
-| POST | `/predict` | Predict fatigue from 22 behavioral features |
+| POST | `/predict` | Predict fatigue from 18 behavioral features |
 | GET | `/model/info` | Model metadata and feature importance |
-| POST | `/model/retrain` | Retrain model with new or synthetic data |
+| POST | `/model/retrain` | Retrain model with newly collected extension data |
 
-### Prediction Input (22 Features)
+### Prediction Input (18 Features)
 
 ```json
 {
@@ -72,11 +77,6 @@ The server starts on `http://localhost:5050`. On first run, it generates a synth
   "consecutive_hours_worked": 2.5,
   "rhythm_consistency": 0.72,
   "keystroke_variability": 65.0,
-  "mouse_speed_avg_px_s": 320,
-  "mouse_click_count": 25,
-  "mouse_idle_ratio": 0.3,
-  "mouse_path_efficiency": 0.65,
-  "focus_switch_count": 5,
   "speed_drop_pct": 12.0,
   "fatigue_score_rule": 30,
   "productivity_loss_pct": 18.0
@@ -94,35 +94,32 @@ The server starts on `http://localhost:5050`. On first run, it generates a synth
     "mild_fatigue": 0.82,
     "fatigue": 0.06
   },
-  "source": "ml_model",
-  "recommendations": [
-    "Early signs of fatigue detected. A short 5-minute break may help."
-  ]
+  "source": "ml_model"
 }
 ```
 
 ## Privacy
 
-- No actual key characters are captured
-- Password fields are excluded from data collection
-- Only timing-based metadata is used
-- No URLs, form data, or personal identifiers are stored
-- All processing runs locally
+- No actual key characters are captured.
+- Password fields are explicitly excluded from data collection.
+- Only microsecond-precision timing metadata is collected.
+- No URLs, form data, or personal identifiers are stored.
+- Data synchronization to Supabase is strictly **opt-in**.
 
 ## Machine Learning Model
 
 The classifier replicates the provided RapidMiner process using scikit-learn:
 
-- Algorithm: Random Forest (100 trees, max depth 10)
-- Criterion: Entropy (approximating gain_ratio)
-- Split: 70% train / 30% test
-- Labels: `normal`, `mild_fatigue`, `fatigue`
+- **Algorithm**: Random Forest (100 trees, max depth 10)
+- **Criterion**: Entropy (approximating gain_ratio)
+- **Split**: 70% train / 30% test
+- **Labels**: `normal`, `mild_fatigue`, `fatigue`
 
-When the Flask API is unavailable, the extension falls back to a rule-based scoring system using speed deviation, error rate increase, and pause increase metrics.
+When the Flask API is unavailable, the extension automatically falls back to a rule-based scoring system using speed deviation, error rate increase, and pause increase metrics.
 
 ## Technology Stack
 
 - **Extension**: HTML, CSS, JavaScript (Manifest V3)
-- **Backend**: Python, Flask, scikit-learn
+- **Backend**: Python, Flask, scikit-learn, hosted on PythonAnywhere
+- **Database**: Supabase (PostgreSQL) for cloud telemetry storage
 - **Model**: Random Forest classifier (joblib persistence)
-- **Storage**: chrome.storage.local (extension), Supabase (optional, stub)

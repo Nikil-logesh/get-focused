@@ -60,18 +60,6 @@
         </div>
       </section>
 
-      <!-- API -->
-      <section class="settings-section" id="section-api">
-        <h2>Backend API</h2>
-        <div class="setting-row" id="row-api-url">
-          <div class="setting-info">
-            <label for="input-api-url">API URL</label>
-            <span class="setting-desc">Flask backend endpoint for fatigue prediction.</span>
-          </div>
-          <input type="text" id="input-api-url" value="http://localhost:5050" class="setting-input wide">
-        </div>
-      </section>
-
       <!-- Data Sharing Consent -->
       <section class="settings-section" id="section-consent">
         <h2>Anonymous Data Sharing</h2>
@@ -100,6 +88,13 @@
             <span class="setting-desc">Remove all stored sessions, baselines, and prediction history.</span>
           </div>
           <button id="btn-clear" class="btn btn-danger">Clear Data</button>
+        </div>
+        <div class="setting-row" id="row-demo-data">
+          <div class="setting-info">
+            <label>Load Sample Data</label>
+            <span class="setting-desc">Load demo data to preview the dashboard with sample metrics.</span>
+          </div>
+          <button id="btn-demo-data" class="btn">Load Demo</button>
         </div>
       </section>
 

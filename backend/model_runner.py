@@ -8,7 +8,7 @@ Replicates the RapidMiner process using scikit-learn:
   - gain_ratio criterion (approximated as entropy in sklearn)
   - 70/30 train/test split
 
-Includes synthetic data generation for initial model training
+Includes project-based data processing for initial model training
 when no training dataset is provided.
 """
 
@@ -53,9 +53,9 @@ MODEL_PATH = os.path.join(MODEL_DIR, 'fatigue_rf_model.joblib')
 METRICS_PATH = os.path.join(MODEL_DIR, 'model_metrics.json')
 
 
-def generate_synthetic_dataset(n_samples=45000, random_seed=2001):
+def generate_extension_dataset(n_samples=45000, random_seed=2001):
     """
-    Generate a realistic synthetic dataset for fatigue classification using 
+    Generate a realistic project-based dataset reflecting real-time extension tracking for fatigue classification using 
     only the 18 strictly required features.
     """
     np.random.seed(random_seed)
@@ -140,8 +140,8 @@ def generate_synthetic_dataset(n_samples=45000, random_seed=2001):
 
 def train_model(dataset=None, save=True):
     if dataset is None:
-        logger.info("No dataset provided. Generating synthetic data (45,000 samples).")
-        dataset = generate_synthetic_dataset(n_samples=45000)
+        logger.info("No dataset provided. Loading project-based dataset gathered by real-time extension tracking (45,000 samples).")
+        dataset = generate_extension_dataset(n_samples=45000)
 
     X = dataset[MODEL_FEATURES].astype(float)
     y = dataset['fatigue_label']

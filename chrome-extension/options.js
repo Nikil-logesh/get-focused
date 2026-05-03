@@ -14,8 +14,7 @@
     baselineCalibrationMin: 5,
     notifyFatigue: true,
     notifyMild: true,
-    notificationCooldownMin: 5,
-    apiUrl: 'http://localhost:5050'
+    notificationCooldownMin: 5
   };
 
   const el = {
@@ -24,10 +23,10 @@
     notifFatigue: document.getElementById('chk-notif-fatigue'),
     notifMild: document.getElementById('chk-notif-mild'),
     notifCooldown: document.getElementById('input-notif-cooldown'),
-    apiUrl: document.getElementById('input-api-url'),
     consent: document.getElementById('chk-consent'),
     btnExport: document.getElementById('btn-export'),
     btnClear: document.getElementById('btn-clear'),
+    btnDemoData: document.getElementById('btn-demo-data'),
     btnSave: document.getElementById('btn-save'),
     saveStatus: document.getElementById('save-status')
   };
@@ -43,7 +42,6 @@
       el.notifFatigue.checked = settings.notifyFatigue;
       el.notifMild.checked = settings.notifyMild;
       el.notifCooldown.value = settings.notificationCooldownMin;
-      el.apiUrl.value = settings.apiUrl;
       el.consent.checked = result.dataConsentGiven === true;
     });
   }
@@ -56,8 +54,7 @@
       baselineCalibrationMin: parseInt(el.baselinePeriod.value) || 5,
       notifyFatigue: el.notifFatigue.checked,
       notifyMild: el.notifMild.checked,
-      notificationCooldownMin: parseInt(el.notifCooldown.value) || 5,
-      apiUrl: el.apiUrl.value.trim() || DEFAULT_SETTINGS.apiUrl
+      notificationCooldownMin: parseInt(el.notifCooldown.value) || 5
     };
 
     const consentGiven = el.consent.checked;
@@ -117,6 +114,14 @@
   el.btnSave.addEventListener('click', saveSettings);
   el.btnExport.addEventListener('click', exportData);
   el.btnClear.addEventListener('click', clearData);
+  if (el.btnDemoData) {
+    el.btnDemoData.addEventListener('click', () => {
+      chrome.runtime.sendMessage({ type: 'LOAD_DEMO_DATA' }, () => {
+        el.saveStatus.textContent = 'Demo data loaded.';
+        setTimeout(() => { el.saveStatus.textContent = ''; }, 3000);
+      });
+    });
+  }
 
   // ─── Init ───────────────────────────────────────────────────────
 

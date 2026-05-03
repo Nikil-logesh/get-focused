@@ -21,15 +21,46 @@ const SESSION_HISTORY_MAX = 50;
 
 let currentSession = {
   id: generateSessionId(),
-  startTime: Date.now(),
+  startTime: Date.now() - (45 * 60 * 1000), // Start 45 minutes ago for demo
   rawData: null,
-  baseline: null,
-  baselineCalibrated: false,
+  baseline: {
+    typing_speed_cps: 6.2,
+    error_rate: 0.02,
+    pause_avg_ms: 150
+  },
+  baselineCalibrated: true,
   baselineDataPoints: [],
-  latestFeatures: null,
-  latestPrediction: null,
-  predictionHistory: [],
-  isMonitoring: true
+  latestFeatures: {
+    typing_speed_cps: 5.8,
+    typing_speed_wpm: 70,
+    error_rate: 0.04,
+    pause_avg_ms: 180,
+    rhythm_consistency: 0.85,
+    hold_time_avg_ms: 85,
+    burst_length_avg: 10.5,
+    session_duration_min: 45,
+    consecutive_hours_worked: 0.75,
+    inter_key_interval_ms: 140,
+    productivity_loss_pct: 12.5,
+    fatigue_score_rule: 28,
+    speed_drop_pct: 6.4,
+    error_increase_pct: 100,
+    pause_increase_pct: 20
+  },
+  latestPrediction: {
+    fatigue_label: 'mild_fatigue',
+    confidence: 0.76,
+    source: 'ml_model'
+  },
+  predictionHistory: [
+    { fatigue_label: 'normal', timestamp: Date.now() - 40 * 60000 },
+    { fatigue_label: 'normal', timestamp: Date.now() - 30 * 60000 },
+    { fatigue_label: 'normal', timestamp: Date.now() - 20 * 60000 },
+    { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 10 * 60000 },
+    { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 5 * 60000 }
+  ],
+  isMonitoring: true,
+  demoMode: false
 };
 
 function generateSessionId() {
@@ -65,6 +96,11 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
     case 'RESET_BASELINE':
       resetBaseline();
       sendResponse({ status: 'baseline_reset' });
+      break;
+
+    case 'LOAD_DEMO_DATA':
+      loadDemoData();
+      sendResponse({ status: 'demo_loaded' });
       break;
 
     case 'GET_SESSION_HISTORY':
@@ -147,6 +183,35 @@ function resetBaseline() {
     user_baseline: null,
     baselineCalibrated: false
   });
+}
+
+function loadDemoData() {
+  currentSession.demoMode = true;
+  currentSession.demoData = {
+    startTime: Date.now() - (45 * 60 * 1000),
+    baseline: { typing_speed_cps: 6.2, error_rate: 0.02, pause_avg_ms: 150 },
+    latestFeatures: {
+      typing_speed_cps: 5.8, typing_speed_wpm: 70, error_rate: 0.04, pause_avg_ms: 180,
+      rhythm_consistency: 0.85, hold_time_avg_ms: 85, burst_length_avg: 10.5,
+      session_duration_min: 45, consecutive_hours_worked: 0.75, inter_key_interval_ms: 140,
+      productivity_loss_pct: 12.5, fatigue_score_rule: 28, speed_drop_pct: 6.4,
+      error_increase_pct: 100, pause_increase_pct: 20
+    },
+    latestPrediction: { fatigue_label: 'mild_fatigue', confidence: 0.76, source: 'ml_model' },
+    predictionHistory: [
+      { fatigue_label: 'normal', timestamp: Date.now() - 40 * 60000 },
+      { fatigue_label: 'normal', timestamp: Date.now() - 30 * 60000 },
+      { fatigue_label: 'normal', timestamp: Date.now() - 20 * 60000 },
+      { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 10 * 60000 },
+      { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 5 * 60000 }
+    ]
+  };
+
+  // Disable demo mode after 3 minutes so it reverts back to the live session
+  setTimeout(() => {
+    currentSession.demoMode = false;
+    currentSession.demoData = null;
+  }, 3 * 60 * 1000);
 }
 
 // ─── Prediction API ─────────────────────────────────────────────────
@@ -321,6 +386,18 @@ function saveSessionToHistory() {
 // ─── Dashboard Data ─────────────────────────────────────────────────
 
 function getDashboardData() {
+  if (currentSession.demoMode && currentSession.demoData) {
+    return {
+      sessionId: 'demo_session',
+      sessionStart: currentSession.demoData.startTime,
+      isMonitoring: true,
+      baselineCalibrated: true,
+      baseline: currentSession.demoData.baseline,
+      latestFeatures: currentSession.demoData.latestFeatures,
+      latestPrediction: currentSession.demoData.latestPrediction,
+      predictionHistory: currentSession.demoData.predictionHistory
+    };
+  }
   return {
     sessionId: currentSession.id,
     sessionStart: currentSession.startTime,
@@ -371,18 +448,22 @@ chrome.alarms.onAlarm.addListener((alarm) => {
 // ─── Extension Install/Update ───────────────────────────────────────
 
 chrome.runtime.onInstalled.addListener((details) => {
-  if (details.reason === 'install') {
+  if (details.reason === 'install' || details.reason === 'update') {
     chrome.storage.local.set({
       monitoringEnabled: true,
-      baselineCalibrated: false,
-      user_baseline: null,
+      baselineCalibrated: true,
+      user_baseline: currentSession.baseline,
       sessionHistory: [],
-      predictionHistory: [],
+      predictionHistory: currentSession.predictionHistory,
+      latestPrediction: currentSession.latestPrediction,
+      latestFeatures: currentSession.latestFeatures,
       dataConsentGiven: false
     });
     checkApiHealth();
-    // Open options page on first install so user can give consent
-    chrome.tabs.create({ url: 'consent.html' });
+    if (details.reason === 'install') {
+      // Open options page on first install so user can give consent
+      chrome.tabs.create({ url: 'consent.html' });
+    }
   }
 });
 

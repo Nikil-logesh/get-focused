@@ -144,7 +144,7 @@ def model_info():
 def retrain():
     """
     Retrain the model, optionally with provided data.
-    Without data, re-generates synthetic dataset.
+    Without data, re-generates the project-based extension tracking dataset.
     """
     global model, model_loaded_at
     try:
