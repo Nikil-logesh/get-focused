@@ -178,11 +178,7 @@ function loadDemoData() {
     ]
   };
 
-  // Disable demo mode after 3 minutes so it reverts back to the live session
-  setTimeout(() => {
-    currentSession.demoMode = false;
-    currentSession.demoData = null;
-  }, 3 * 60 * 1000);
+  currentSession.demoExpiresAt = Date.now() + (2 * 60 * 1000); // Expires exactly 2 minutes from click
 }
 
 // ─── Prediction API ─────────────────────────────────────────────────
@@ -358,16 +354,21 @@ function saveSessionToHistory() {
 
 function getDashboardData() {
   if (currentSession.demoMode && currentSession.demoData) {
-    return {
-      sessionId: 'demo_session',
-      sessionStart: currentSession.demoData.startTime,
-      isMonitoring: true,
-      baselineCalibrated: true,
-      baseline: currentSession.demoData.baseline,
-      latestFeatures: currentSession.demoData.latestFeatures,
-      latestPrediction: currentSession.demoData.latestPrediction,
-      predictionHistory: currentSession.demoData.predictionHistory
-    };
+    if (Date.now() > currentSession.demoExpiresAt) {
+      currentSession.demoMode = false;
+      currentSession.demoData = null;
+    } else {
+      return {
+        sessionId: 'demo_session',
+        sessionStart: currentSession.demoData.startTime,
+        isMonitoring: true,
+        baselineCalibrated: true,
+        baseline: currentSession.demoData.baseline,
+        latestFeatures: currentSession.demoData.latestFeatures,
+        latestPrediction: currentSession.demoData.latestPrediction,
+        predictionHistory: currentSession.demoData.predictionHistory
+      };
+    }
   }
   return {
     sessionId: currentSession.id,
