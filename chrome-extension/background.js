@@ -21,46 +21,17 @@ const SESSION_HISTORY_MAX = 50;
 
 let currentSession = {
   id: generateSessionId(),
-  startTime: Date.now() - (45 * 60 * 1000), // Start 45 minutes ago for demo
+  startTime: Date.now(),
   rawData: null,
-  baseline: {
-    typing_speed_cps: 6.2,
-    error_rate: 0.02,
-    pause_avg_ms: 150
-  },
-  baselineCalibrated: true,
+  baseline: null,
+  baselineCalibrated: false,
   baselineDataPoints: [],
-  latestFeatures: {
-    typing_speed_cps: 5.8,
-    typing_speed_wpm: 70,
-    error_rate: 0.04,
-    pause_avg_ms: 180,
-    rhythm_consistency: 0.85,
-    hold_time_avg_ms: 85,
-    burst_length_avg: 10.5,
-    session_duration_min: 45,
-    consecutive_hours_worked: 0.75,
-    inter_key_interval_ms: 140,
-    productivity_loss_pct: 12.5,
-    fatigue_score_rule: 28,
-    speed_drop_pct: 6.4,
-    error_increase_pct: 100,
-    pause_increase_pct: 20
-  },
-  latestPrediction: {
-    fatigue_label: 'mild_fatigue',
-    confidence: 0.76,
-    source: 'ml_model'
-  },
-  predictionHistory: [
-    { fatigue_label: 'normal', timestamp: Date.now() - 40 * 60000 },
-    { fatigue_label: 'normal', timestamp: Date.now() - 30 * 60000 },
-    { fatigue_label: 'normal', timestamp: Date.now() - 20 * 60000 },
-    { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 10 * 60000 },
-    { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 5 * 60000 }
-  ],
+  latestFeatures: null,
+  latestPrediction: null,
+  predictionHistory: [],
   isMonitoring: true,
-  demoMode: false
+  demoMode: false,
+  demoData: null
 };
 
 function generateSessionId() {
