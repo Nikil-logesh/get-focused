@@ -1,0 +1,48 @@
+{
+  "manifest_version": 3,
+  "name": "Get Focused",
+  "version": "1.0.0",
+  "description": "Real-time cognitive fatigue detection using behavioral analytics. Monitors typing and mouse patterns to predict fatigue and improve productivity.",
+  "permissions": [
+    "storage",
+    "alarms",
+    "notifications",
+    "activeTab",
+    "tabs"
+  ],
+  "host_permissions": [
+    "http://localhost:5050/*",
+    "https://*.supabase.co/*"
+  ],
+  "background": {
+    "service_worker": "background.js"
+  },
+  "content_scripts": [
+    {
+      "matches": ["<all_urls>"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
+    }
+  ],
+  "action": {
+    "default_popup": "popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_page": "options.html",
+  "web_accessible_resources": [
+    {
+      "resources": ["dashboard.html", "dashboard.css", "dashboard.js"],
+      "matches": ["<all_urls>"]
+    }
+  ],
+  "icons": {
+    "16": "icons/icon16.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  }
+}
+

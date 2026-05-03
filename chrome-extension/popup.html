@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Focused</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <div id="app">
+
+    <!-- Header -->
+    <header id="header">
+      <div class="brand">
+        <img src="icons/icon48.png" alt="" class="logo">
+        <span class="brand-name">Get Focused</span>
+      </div>
+      <div class="header-actions">
+        <button id="btn-toggle" class="toggle-switch" title="Toggle monitoring">
+          <span id="toggle-knob"></span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Status Card (dashed border like TempMail) -->
+    <div class="main-card">
+      <p class="card-label">Current Fatigue Status</p>
+
+      <!-- Donut + Score -->
+      <div class="donut-row">
+        <div class="donut-wrap">
+          <canvas id="donut-canvas" width="100" height="100"></canvas>
+          <div class="donut-inner">
+            <span id="donut-score">0</span>
+          </div>
+        </div>
+        <div class="status-info">
+          <div class="status-badge-row">
+            <span id="status-dot" class="sdot"></span>
+            <span id="status-text" class="status-lbl">Awaiting data...</span>
+          </div>
+          <div id="confidence-text" class="conf-text">—</div>
+          <div class="dist-list">
+            <div class="dist-item"><span class="dist-dot normal"></span><span>Normal</span><strong id="pct-normal">—</strong></div>
+            <div class="dist-item"><span class="dist-dot mild"></span><span>Mild</span><strong id="pct-mild">—</strong></div>
+            <div class="dist-item"><span class="dist-dot high"></span><span>High</span><strong id="pct-fatigue">—</strong></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Session row -->
+      <div class="session-row">
+        <span class="session-label">Session Time</span>
+        <span id="session-duration" class="session-val">00:00</span>
+      </div>
+    </div>
+
+    <!-- 3 Key Stats -->
+    <div class="stats-row">
+      <div class="stat-pill">
+        <div id="stat-speed" class="stat-num">—</div>
+        <div class="stat-label">WPM</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill">
+        <div id="stat-error" class="stat-num">—</div>
+        <div class="stat-label">Errors</div>
+      </div>
+      <div class="stat-divider"></div>
+      <div class="stat-pill">
+        <div id="stat-prod" class="stat-num">—</div>
+        <div class="stat-label">Prod. Loss</div>
+      </div>
+    </div>
+
+    <!-- Actions -->
+    <div class="action-row">
+      <button id="btn-reset" class="btn-secondary">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M2 8a6 6 0 1 1 1.5 3.9" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/><path d="M2 12V8h4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Reset Baseline
+      </button>
+      <button id="btn-dashboard" class="btn-primary">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1.2" stroke="currentColor" stroke-width="1.5"/></svg>
+        Full Dashboard
+      </button>
+    </div>
+
+    <!-- Footer -->
+    <div id="footer">
+      <span id="api-status" class="api-indicator disconnected">
+        <span class="api-dot"></span>API Disconnected
+      </span>
+      <a href="#" id="link-settings" class="footer-link">Settings</a>
+    </div>
+
+  </div>
+  <script src="popup.js"></script>
+</body>
+</html>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Focused — Settings</title>
+  <link rel="stylesheet" href="options.css">
+</head>
+<body>
+  <div id="settings-app">
+    <header id="settings-header">
+      <h1 id="settings-title">Get Focused Settings</h1>
+      <p class="settings-subtitle">Configure monitoring behavior, notifications, and data management.</p>
+    </header>
+
+    <main id="settings-main">
+
+      <!-- Monitoring -->
+      <section class="settings-section" id="section-monitoring">
+        <h2>Monitoring</h2>
+        <div class="setting-row" id="row-interval">
+          <div class="setting-info">
+            <label for="input-interval">Collection Interval (seconds)</label>
+            <span class="setting-desc">How often interaction data is collected and processed.</span>
+          </div>
+          <input type="number" id="input-interval" min="10" max="300" value="60" class="setting-input">
+        </div>
+        <div class="setting-row" id="row-baseline-period">
+          <div class="setting-info">
+            <label for="input-baseline-period">Baseline Calibration Period (minutes)</label>
+            <span class="setting-desc">Duration of initial activity used to establish your personal baseline.</span>
+          </div>
+          <input type="number" id="input-baseline-period" min="1" max="30" value="5" class="setting-input">
+        </div>
+      </section>
+
+      <!-- Notifications -->
+      <section class="settings-section" id="section-notifications">
+        <h2>Notifications</h2>
+        <div class="setting-row" id="row-notif-fatigue">
+          <div class="setting-info">
+            <label for="chk-notif-fatigue">Alert on fatigue detection</label>
+            <span class="setting-desc">Show a system notification when fatigue is predicted.</span>
+          </div>
+          <input type="checkbox" id="chk-notif-fatigue" checked class="setting-checkbox">
+        </div>
+        <div class="setting-row" id="row-notif-mild">
+          <div class="setting-info">
+            <label for="chk-notif-mild">Alert on mild fatigue</label>
+            <span class="setting-desc">Show a notification for early fatigue signs.</span>
+          </div>
+          <input type="checkbox" id="chk-notif-mild" checked class="setting-checkbox">
+        </div>
+        <div class="setting-row" id="row-notif-cooldown">
+          <div class="setting-info">
+            <label for="input-notif-cooldown">Notification Cooldown (minutes)</label>
+            <span class="setting-desc">Minimum time between consecutive notifications.</span>
+          </div>
+          <input type="number" id="input-notif-cooldown" min="1" max="60" value="5" class="setting-input">
+        </div>
+      </section>
+
+      <!-- API -->
+      <section class="settings-section" id="section-api">
+        <h2>Backend API</h2>
+        <div class="setting-row" id="row-api-url">
+          <div class="setting-info">
+            <label for="input-api-url">API URL</label>
+            <span class="setting-desc">Flask backend endpoint for fatigue prediction.</span>
+          </div>
+          <input type="text" id="input-api-url" value="http://localhost:5050" class="setting-input wide">
+        </div>
+      </section>
+
+      <!-- Data Sharing Consent -->
+      <section class="settings-section" id="section-consent">
+        <h2>Anonymous Data Sharing</h2>
+        <div class="setting-row" id="row-consent">
+          <div class="setting-info">
+            <label for="chk-consent">Help improve fatigue detection</label>
+            <span class="setting-desc">Share anonymized behavioral metrics (typing speed, pause patterns, mouse activity) to help improve the fatigue prediction model. No personal data, passwords, or typed content is ever collected or shared.</span>
+          </div>
+          <input type="checkbox" id="chk-consent" class="setting-checkbox">
+        </div>
+      </section>
+
+      <!-- Data Management -->
+      <section class="settings-section" id="section-data">
+        <h2>Data Management</h2>
+        <div class="setting-row" id="row-export">
+          <div class="setting-info">
+            <label>Export Session Data</label>
+            <span class="setting-desc">Download all stored session features as a JSON file.</span>
+          </div>
+          <button id="btn-export" class="btn">Export</button>
+        </div>
+        <div class="setting-row" id="row-clear">
+          <div class="setting-info">
+            <label>Clear All Data</label>
+            <span class="setting-desc">Remove all stored sessions, baselines, and prediction history.</span>
+          </div>
+          <button id="btn-clear" class="btn btn-danger">Clear Data</button>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Save Bar -->
+    <footer id="settings-footer">
+      <span class="save-status" id="save-status"></span>
+      <button id="btn-save" class="btn btn-primary">Save Settings</button>
+    </footer>
+
+  </div>
+
+  <script src="options.js"></script>
+</body>
+</html>

@@ -1,0 +1,62 @@
+{
+  "accuracy": 1.0,
+  "report": {
+    "fatigue": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4500.0
+    },
+    "mild_fatigue": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4500.0
+    },
+    "normal": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 4500.0
+    },
+    "accuracy": 1.0,
+    "macro avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 13500.0
+    },
+    "weighted avg": {
+      "precision": 1.0,
+      "recall": 1.0,
+      "f1-score": 1.0,
+      "support": 13500.0
+    }
+  },
+  "n_train": 31500,
+  "n_test": 13500,
+  "features": [
+    "typing_speed_cps",
+    "error_rate",
+    "backspace_rate",
+    "inter_key_interval_ms",
+    "pause_avg_ms",
+    "pause_std_ms",
+    "pause_to_type_ratio",
+    "pause_increase_pct",
+    "hold_time_avg_ms",
+    "burst_length_avg",
+    "session_duration_min",
+    "consecutive_hours_worked",
+    "rhythm_consistency",
+    "keystroke_variability",
+    "mouse_speed_avg_px_s",
+    "mouse_click_count",
+    "mouse_idle_ratio",
+    "mouse_path_efficiency",
+    "focus_switch_count",
+    "speed_drop_pct",
+    "fatigue_score_rule",
+    "productivity_loss_pct"
+  ]
+}

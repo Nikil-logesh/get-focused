@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Get Focused — Dashboard</title>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="dashboard.css">
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <aside id="sidebar">
+    <div class="sidebar-brand">
+      <img src="icons/icon48.png" alt="" class="sidebar-logo">
+      <span class="sidebar-name">Get Focused</span>
+    </div>
+    <nav class="sidebar-nav">
+      <a href="#overview"   class="nav-link active" data-section="overview">Overview</a>
+      <a href="#metrics"    class="nav-link"         data-section="metrics">Metrics</a>
+      <a href="#trend"      class="nav-link"         data-section="trend">Trend</a>
+      <a href="#baseline"   class="nav-link"         data-section="baseline">Baseline</a>
+    </nav>
+    <div class="sidebar-footer">
+      <button id="btn-toggle" class="sidebar-toggle">
+        <span id="toggle-dot" class="tdot active"></span>
+        <span id="toggle-label">Monitoring ON</span>
+      </button>
+      <button id="btn-reset-baseline" class="sidebar-reset">Reset Baseline</button>
+      <a href="#" id="link-settings" class="sidebar-settings">Settings</a>
+    </div>
+  </aside>
+
+  <!-- Main -->
+  <main id="main">
+
+    <!-- Top Bar -->
+    <div id="topbar">
+      <div>
+        <div id="session-timer">Session: <strong id="session-duration">00:00</strong></div>
+      </div>
+      <div id="topbar-right">
+        <span id="api-status" class="api-pill">API: Checking...</span>
+        <span id="sync-status" class="sync-pill">Sync: —</span>
+      </div>
+    </div>
+
+    <!-- Section: Overview -->
+    <section id="section-overview" class="dash-section">
+      <h2 class="section-heading">Overview</h2>
+
+      <div class="overview-grid">
+
+        <!-- Current Status -->
+        <div class="ov-card status-card" id="status-card">
+          <div class="ov-card-title">Current Status</div>
+          <div class="status-main">
+            <span id="status-dot" class="sdot"></span>
+            <span id="status-text" class="status-text">Awaiting data...</span>
+          </div>
+          <div class="status-meta">
+            <span id="confidence-badge" class="conf-badge">—</span>
+            <span id="prediction-source" class="source-badge">—</span>
+          </div>
+        </div>
+
+        <!-- Score Gauge -->
+        <div class="ov-card gauge-card">
+          <div class="ov-card-title">Fatigue Score</div>
+          <div class="gauge-wrap">
+            <svg id="gauge-svg" viewBox="0 0 200 120" xmlns="http://www.w3.org/2000/svg">
+              <path d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#e4e7ec" stroke-width="14" stroke-linecap="round"/>
+              <path id="gauge-fill" d="M20,110 A80,80 0 0,1 180,110" fill="none" stroke="#3d7c4f" stroke-width="14" stroke-linecap="round" stroke-dasharray="0 251"/>
+            </svg>
+            <div class="gauge-center">
+              <div id="gauge-score" class="gauge-score-num">0</div>
+              <div class="gauge-score-lbl">/ 100</div>
+            </div>
+          </div>
+          <div id="level-bar" class="level-bar">
+            <div id="seg-normal"   class="seg">Normal</div>
+            <div id="seg-mild"     class="seg">Mild</div>
+            <div id="seg-high"     class="seg">Fatigue</div>
+          </div>
+        </div>
+
+        <!-- Donut Distribution -->
+        <div class="ov-card donut-card">
+          <div class="ov-card-title">Session Distribution</div>
+          <div class="donut-wrap">
+            <canvas id="donut-canvas" width="120" height="120"></canvas>
+            <div class="donut-legend">
+              <div class="dl-row"><span class="dl-dot" style="background:#3d7c4f"></span><span>Normal</span><strong id="dist-normal">—</strong></div>
+              <div class="dl-row"><span class="dl-dot" style="background:#c4841d"></span><span>Mild</span><strong id="dist-mild">—</strong></div>
+              <div class="dl-row"><span class="dl-dot" style="background:#a63d40"></span><span>Fatigue</span><strong id="dist-fatigue">—</strong></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Productivity Bar -->
+        <div class="ov-card prod-card">
+          <div class="ov-card-title">Productivity Impact</div>
+          <div class="prod-num"><span id="prod-val">—</span><span class="prod-unit">% loss</span></div>
+          <div class="prod-bar-bg"><div id="prod-bar" class="prod-bar-fill"></div></div>
+          <div class="prod-footer">based on speed + error deviation from baseline</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: Metrics -->
+    <section id="section-metrics" class="dash-section">
+      <h2 class="section-heading">Performance Metrics</h2>
+      <div class="metrics-grid">
+
+        <div class="m-card">
+          <div class="m-title">Typing Speed</div>
+          <div class="m-val"><span id="val-speed">—</span><span class="m-unit"> cps</span></div>
+          <div class="m-sub"><span id="val-wpm">—</span> wpm</div>
+          <div class="m-delta" id="delta-speed"></div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Error Rate</div>
+          <div class="m-val"><span id="val-errors">—</span><span class="m-unit">%</span></div>
+          <div class="m-sub">backspace frequency</div>
+          <div class="m-delta" id="delta-errors"></div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Avg Pause</div>
+          <div class="m-val"><span id="val-pauses">—</span><span class="m-unit"> ms</span></div>
+          <div class="m-sub">between keystrokes</div>
+          <div class="m-delta" id="delta-pauses"></div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Rhythm Consistency</div>
+          <div class="m-val"><span id="val-rhythm">—</span></div>
+          <div class="m-sub">0 = chaotic, 1 = steady</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Hold Time</div>
+          <div class="m-val"><span id="val-hold">—</span><span class="m-unit"> ms</span></div>
+          <div class="m-sub">avg key hold duration</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Burst Length</div>
+          <div class="m-val"><span id="val-burst">—</span></div>
+          <div class="m-sub">avg chars before pause</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Mouse Speed</div>
+          <div class="m-val"><span id="val-mouse-speed">—</span><span class="m-unit"> px/s</span></div>
+          <div class="m-sub">average velocity</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Mouse Idle</div>
+          <div class="m-val"><span id="val-idle">—</span><span class="m-unit">%</span></div>
+          <div class="m-sub">time without movement</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Focus Switches</div>
+          <div class="m-val"><span id="val-focus">—</span></div>
+          <div class="m-sub"><span id="val-clicks">—</span> mouse clicks</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Path Efficiency</div>
+          <div class="m-val"><span id="val-path">—</span></div>
+          <div class="m-sub">mouse path linearity</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">Session Duration</div>
+          <div class="m-val"><span id="val-session-min">—</span><span class="m-unit"> min</span></div>
+          <div class="m-sub"><span id="val-hours">—</span> hrs continuous</div>
+        </div>
+
+        <div class="m-card">
+          <div class="m-title">IKI</div>
+          <div class="m-val"><span id="val-iki">—</span><span class="m-unit"> ms</span></div>
+          <div class="m-sub">inter-key interval avg</div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- Section: Trend -->
+    <section id="section-trend" class="dash-section">
+      <h2 class="section-heading">Fatigue Trend</h2>
+      <div class="trend-card">
+        <canvas id="trend-canvas"></canvas>
+        <div id="trend-empty" class="trend-empty">Collecting data — check back after a few minutes of activity.</div>
+      </div>
+    </section>
+
+    <!-- Section: Baseline -->
+    <section id="section-baseline" class="dash-section">
+      <h2 class="section-heading">Baseline Calibration</h2>
+      <div id="baseline-status-msg" class="baseline-msg">Calibrating — work normally for 5 minutes.</div>
+      <div class="baseline-grid">
+        <div class="bl-card">
+          <div class="bl-title">Baseline Speed</div>
+          <div class="bl-val" id="bl-speed">—</div>
+          <div class="bl-unit">cps</div>
+        </div>
+        <div class="bl-card">
+          <div class="bl-title">Baseline Errors</div>
+          <div class="bl-val" id="bl-error">—</div>
+          <div class="bl-unit">%</div>
+        </div>
+        <div class="bl-card">
+          <div class="bl-title">Baseline Pause</div>
+          <div class="bl-val" id="bl-pause">—</div>
+          <div class="bl-unit">ms</div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="dashboard.js"></script>
+</body>
+</html>
