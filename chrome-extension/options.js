@@ -44,6 +44,15 @@
       el.notifCooldown.value = settings.notificationCooldownMin;
       el.consent.checked = result.dataConsentGiven === true;
     });
+
+    // Check initial demo state
+    chrome.runtime.sendMessage({ type: 'GET_DEMO_STATE' }, (res) => {
+      if (res && res.isDemo) {
+        el.btnDemoData.textContent = 'Turn Off Sample Data';
+      } else {
+        el.btnDemoData.textContent = 'Load Sample Data';
+      }
+    });
   }
 
   // ─── Save Settings ─────────────────────────────────────────────
@@ -116,8 +125,14 @@
   el.btnClear.addEventListener('click', clearData);
   if (el.btnDemoData) {
     el.btnDemoData.addEventListener('click', () => {
-      chrome.runtime.sendMessage({ type: 'LOAD_DEMO_DATA' }, () => {
-        el.saveStatus.textContent = 'Demo data loaded.';
+      chrome.runtime.sendMessage({ type: 'TOGGLE_DEMO_DATA' }, (res) => {
+        if (res && res.isDemo) {
+          el.saveStatus.textContent = 'Demo data enabled (auto-off in 3 min).';
+          el.btnDemoData.textContent = 'Turn Off Sample Data';
+        } else {
+          el.saveStatus.textContent = 'Demo data disabled. Live capturing resumed.';
+          el.btnDemoData.textContent = 'Load Sample Data';
+        }
         setTimeout(() => { el.saveStatus.textContent = ''; }, 3000);
       });
     });

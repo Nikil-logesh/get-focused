@@ -69,9 +69,22 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       sendResponse({ status: 'baseline_reset' });
       break;
 
-    case 'LOAD_DEMO_DATA':
-      loadDemoData();
-      sendResponse({ status: 'demo_loaded' });
+    case 'TOGGLE_DEMO_DATA':
+      const isDemoNow = toggleDemoData();
+      sendResponse({ status: 'demo_toggled', isDemo: isDemoNow });
+      break;
+
+    case 'GET_DEMO_STATE':
+      let active = false;
+      if (currentSession.demoMode && currentSession.demoData) {
+        if (Date.now() > currentSession.demoExpiresAt) {
+          currentSession.demoMode = false;
+          currentSession.demoData = null;
+        } else {
+          active = true;
+        }
+      }
+      sendResponse({ isDemo: active });
       break;
 
     case 'GET_SESSION_HISTORY':
@@ -156,8 +169,15 @@ function resetBaseline() {
   });
 }
 
-function loadDemoData() {
+function toggleDemoData() {
+  if (currentSession.demoMode) {
+    currentSession.demoMode = false;
+    currentSession.demoData = null;
+    return false;
+  }
+
   currentSession.demoMode = true;
+  currentSession.demoExpiresAt = Date.now() + (3 * 60 * 1000); // Expires exactly 3 minutes from click
   currentSession.demoData = {
     startTime: Date.now() - (45 * 60 * 1000),
     baseline: { typing_speed_cps: 6.2, error_rate: 0.02, pause_avg_ms: 150 },
@@ -177,8 +197,7 @@ function loadDemoData() {
       { fatigue_label: 'mild_fatigue', timestamp: Date.now() - 5 * 60000 }
     ]
   };
-
-  currentSession.demoExpiresAt = Date.now() + (2 * 60 * 1000); // Expires exactly 2 minutes from click
+  return true;
 }
 
 // ─── Prediction API ─────────────────────────────────────────────────
